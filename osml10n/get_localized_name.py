@@ -14,9 +14,13 @@ from .street_abbrev import street_abbrev, street_abbrev_all, street_abbrev_all_l
 # 5 most commonly spoken languages using latin script (hopefully)
 latin_langs = ["en","es","fr","pt","de"]
 
+# "latin" codeblock are
 def isLatin(str):
   for st in str:
-    if (ord(st)>383):
+    od=ord(st)
+    if (od>0x036F):
+      if ((od > 0x1FFF) and (od < 0x2070)):
+        continue
       return(False)
   return(True)
 

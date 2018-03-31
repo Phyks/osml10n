@@ -1,5 +1,0 @@
-pip3 install git+https://github.com/miurahr/pykakasi
-pip3 install pythainlp
-pip3 install pyicu or apt install python3-icu
-apt install python3-levenshtein
-libsqlite3-mod-spatialite

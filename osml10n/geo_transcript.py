@@ -28,13 +28,20 @@ def containsAlphabet(str,alphabet):
     if (unicodedata.name(st[0]).split(' ')[0] == alphabet):
       return(True)
   return(False)
-  
+
+# likely faster then containsAlphabet(name,'THAI')
+def containsTHAI(str):
+  for st in str:
+    if ((ord(st) >= 0x0E00) and (ord(st) <= 0x0E7F )):
+      return(True)
+  return(False)
+
 def translit(name):
   # currently supported language dependent transcriptions
   # * thai
   # * ...
   # more will possibly follow :)
-  if containsAlphabet(name,'THAI'):
+  if containsTHAI(name):
     return(thai_transcript(name))
   # add other alphabet transcription functions
   # here as above:
@@ -43,7 +50,8 @@ def translit(name):
   
   # fallback transliteration method is ICU
   return(icu_translit(name))
-  
+
+
 def geo_transcript(name, lonlat):
   if lonlat is None:
     return(translit(name))
@@ -52,4 +60,8 @@ def geo_transcript(name, lonlat):
   if (country=='jp'):
     if containsAlphabet(name,'CJK'):
       return(kanji_transcript(name))
+  if (country=='th'):
+    if containsTHAI(name):
+       return(thai_transcript(name))
+       
   return(icu_translit(name))

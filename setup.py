@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 
-osml10n_version='3.0'
-
-fd=open("osml10n/osml10n_version.py","w+")
-fd.write("osml10n_version=%s\n" % osml10n_version)
-fd.close()
+# get version number from source
+import osml10n
+osml10n_version=osml10n.version()
 
 from distutils.core import setup
 setup(

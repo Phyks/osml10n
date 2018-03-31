@@ -17,12 +17,25 @@ SQLITE_FILE='country_osm_grid.db'
 def get_country(lonlat):
   # lonlat can either be a list with 2 elements
   # or a WKB point
-  return(get_country_via_sqlite(lonlat))
+  if type(lonlat) is list:
+    return(get_country_via_sqlite(lonlat))
+  return(get_country_via_psql(lonlat))
+
+def get_country_via_psql(wkb):
+  try:
+    import plpy
+  except:
+    # outside PL/Python
+    return(None)
+  # We well always get WKB in case we are callled from a PostgreSQL stored procedure
+  q = "SELECT country_code from country_osm_grid where st_contains(geometry, st_centroid(st_transform('%s'::geometry,4326)));"
+  q = q % wkb
+  result=plpy.execute(q)
+  if (len(result)==0):
+    return('')
+  return(result[0]['country_code'])
 
 def get_country_via_sqlite(lonlat):
-  if type(lonlat) is not list:
-    return None
-  
   # check if sqlite file is available
   fn = os.path.join(os.path.dirname(os.path.realpath(__file__)),SQLITE_FILE)
   if not os.path.isfile(fn):
@@ -37,6 +50,8 @@ def get_country_via_sqlite(lonlat):
   c.execute(q)
   res=c.fetchone()
   conn.close()
+  if res==None:
+    return('')
   return(res[0])
 
 if __name__ == "__main__":

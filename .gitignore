@@ -1,5 +1,4 @@
 __pycache__
 *.pyc
 build
-osml10n_version.py
 country_osm_grid.sql

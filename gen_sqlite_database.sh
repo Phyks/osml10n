@@ -29,5 +29,3 @@ echo "Exporting into spatialite..."
 ogr2ogr -progress -dsco SPATIALITE=YES -f "SQLITE" -gt 65536 $output PG: country_osm_grid
 echo "Removing table form PostgreSQL"
 echo "drop table country_osm_grid;" |psql  >/dev/null
-rm country_osm_grid.sql
-
