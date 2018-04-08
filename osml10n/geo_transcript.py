@@ -16,6 +16,7 @@
 #
 
 import unicodedata
+import sys
 from .thai_transcript import thai_transcript
 from .icu_translit import icu_translit
 from .get_country import get_country
@@ -42,7 +43,13 @@ def translit(name):
   # * ...
   # more will possibly follow :)
   if containsTHAI(name):
-    return(thai_transcript(name))
+    # thai_transcript does not seem to work reliably in some cases
+    # https://github.com/PyThaiNLP/pythainlp/issues/86
+    try:
+      return(thai_transcript(name))
+    except:
+      sys.stderr.write("thai_transcript function failed for >%s<\n" % name)
+      
   # add other alphabet transcription functions
   # here as above:
   # if containsAlphabet(name,'NEWALPHABET'):
