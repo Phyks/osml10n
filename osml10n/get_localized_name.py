@@ -92,14 +92,14 @@ def gen_combined_name(local_name, name,loc_in_brackets,show_brackets=True,separa
     if loc_in_brackets:
       # explicitely mark the whole string as LTR
       if show_brackets:
-        return(u'\u202d'+name+separator+'('+local_name+')'+u'\u202c')
+        return(u'\u202a'+name+separator+'('+local_name+')'+u'\u202c')
       else:
-        return(u'\u202d'+name+separator+local_name+u'\u202c')
+        return(u'\u202a'+name+separator+local_name+u'\u202c')
     else:
       if show_brackets:
-        return(u'\u202d'+local_name+separator+'('+name+')'+u'\u202c')
+        return(u'\u202a'+local_name+separator+'('+name+')'+u'\u202c')
       else:
-        return(u'\u202d'+local_name+separator+name+u'\u202c') 
+        return(u'\u202a'+local_name+separator+name+u'\u202c') 
 
 # This is the state machine to return the two relevant tags-names for map
 # localization as a list. This is basically the core of this code :)
