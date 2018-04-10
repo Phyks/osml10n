@@ -21,7 +21,6 @@ import Levenshtein
 
 def get_country_name(
 tags,
-separator='\n',
 targetlang='de'):
   ldistmin=1
   if 'ISO3166-1:alpha2' not in tags:
@@ -44,7 +43,7 @@ targetlang='de'):
           ldistall=ldist
         if (ldistall > ldistmin):
           names.append(tags[tag])
-  return(separator.join(names))
+  return(names)
 
 if __name__ == "__main__":
   print(get_country_name({"ISO3166-1:alpha2": "IN", "name:de": "Indien", "name:hi": "भारत", "name:en": "India"}))

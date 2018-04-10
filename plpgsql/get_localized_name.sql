@@ -27,7 +27,7 @@ CREATE or REPLACE FUNCTION osml10n_get_placename_from_tags(tags hstore,
     plpy.error('python module "osml10n" not found')
   if name is not None:
     tags['name'] = name
-  return(osml10n.get_placename(tags,loc_in_brackets,show_brackets,separator,targetlang,place))
+  return(osml10n.format_list4map(osml10n.get_placename(tags,targetlang,place),separator,loc_in_brackets,show_brackets))
 $$ LANGUAGE plpython3u TRANSFORM FOR TYPE hstore;
 
 CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
@@ -44,7 +44,7 @@ CREATE or REPLACE FUNCTION osml10n_get_streetname_from_tags(tags hstore,
     plpy.error('python module "osml10n" not found')
   if name is not None:
     tags['name'] = name
-  return(osml10n.get_streetname(tags,loc_in_brackets,show_brackets,separator,targetlang,place))
+  return(osml10n.format_list4map(osml10n.get_streetname(tags,targetlang,place),separator,loc_in_brackets,show_brackets))
 $$ LANGUAGE plpython3u TRANSFORM FOR TYPE hstore;
 
 CREATE or REPLACE FUNCTION osml10n_get_name_without_brackets_from_tags(tags hstore,
@@ -76,7 +76,7 @@ CREATE or REPLACE FUNCTION osml10n_get_country_name(tags hstore, separator text 
     import osml10n
   except:
     plpy.error('python module "osml10n" not found')
-  return(osml10n.get_country_name(tags,separator,targetlang))
+  return(osml10n.format_list4map(osml10n.get_country_name(tags,targetlang),separator))
 $$ LANGUAGE plpython3u TRANSFORM FOR TYPE hstore;
 
 CREATE or REPLACE FUNCTION osml10n_version() RETURNS TEXT AS $$

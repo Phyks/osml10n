@@ -30,7 +30,7 @@ def unaccent(input_str):
   return(only_ascii.decode('utf-8'))
 
 # Generate a combined name from local_name and on-site name (or do not in some cases)
-def gen_combined_name(local_name, name,loc_in_brackets,show_brackets=True,separator=' ',tags=None):
+def gen_combined_name(local_name, name,tags=None):
   if name is None:
     return(local_name)
   nobrackets=False
@@ -64,7 +64,7 @@ def gen_combined_name(local_name, name,loc_in_brackets,show_brackets=True,separa
     regex = '[\s\(\)\-,;:/\[\]](' + re.escape(unacc_local) + ')[\s\(\)\-,;:/\[\]]'
     if re.search(regex,' '+unacc+' ') is not None:
       if (len(unacc_local) == len(unacc)):
-        return(name)
+        return(['',name])
       if tags is None:
         nobrackets=True
       else:
@@ -84,22 +84,12 @@ def gen_combined_name(local_name, name,loc_in_brackets,show_brackets=True,separa
       
         # consider other names than local_name crap in case we did not find any
         if not found:
-          return(local_name)
+          return([local_name,''])
     
   if nobrackets:
-    return(name)
+    return(['',name])
   else:
-    if loc_in_brackets:
-      # explicitely mark the whole string as LTR
-      if show_brackets:
-        return(u'\u202a'+name+separator+'('+local_name+')'+u'\u202c')
-      else:
-        return(u'\u202a'+name+separator+local_name+u'\u202c')
-    else:
-      if show_brackets:
-        return(u'\u202a'+local_name+separator+'('+name+')'+u'\u202c')
-      else:
-        return(u'\u202a'+local_name+separator+name+u'\u202c') 
+     return([local_name,name])
 
 # This is the state machine to return the two relevant tags-names for map
 # localization as a list. This is basically the core of this code :)
@@ -150,9 +140,6 @@ def get_relevant_tags(tags,targetlang):
 # this one will return a localized name (if possible) and an on-site name
 def get_placename(
 tags,
-loc_in_brackets,
-show_brackets=False, 
-separator='\n',
 targetlang='de',
 geometry=None):
 
@@ -167,30 +154,27 @@ geometry=None):
   if (key[1] != ''):
     if (key[0] == ''):
       # case 1
-      return(tags[key[1]])
+      return(['',tags[key[1]]])
     # both keys are non empty
     # case 4
     if (key[0] == 'name:'+targetlang):
-      return(gen_combined_name(tags[key[0]],tags[key[1]],loc_in_brackets,show_brackets,separator,tags))
+      return(gen_combined_name(tags[key[0]],tags[key[1]],tags))
     # case 5
     if (key[0][0:12] != '__transcript'):
-      return(gen_combined_name(tags[key[0]],tags[key[1]],loc_in_brackets,show_brackets,separator,tags))
+      return(gen_combined_name(tags[key[0]],tags[key[1]],tags))
     else:
       # case 6
       transcripted=geo_transcript(tags[key[0][13:]],geometry)
-      return(gen_combined_name(transcripted,tags[key[1]],loc_in_brackets,show_brackets,separator))
+      return(gen_combined_name(transcripted,tags[key[1]]))
     
   # cases 2 and 3
-  return('')
+  return(['',''])
 
 # Second one of the three l10n functions
 # second one will return a localized abbreviated streetname (if possible)
 # and an on-site abbreviated streetname
 def get_streetname(
 tags,
-loc_in_brackets,
-show_brackets=False, 
-separator=' - ',
 targetlang='de',
 geometry=None):
 
@@ -205,21 +189,21 @@ geometry=None):
   if (key[1] != ''):
     if (key[0] == ''):
       # case 1
-      return(street_abbrev_all_latin(tags[key[1]]))
+      return(['',street_abbrev_all_latin(tags[key[1]])])
     # both keys are non empty
     # case 4
     if (key[0] == 'name:'+targetlang):
-      return(gen_combined_name(street_abbrev(tags[key[0]],targetlang),street_abbrev_all(tags[key[1]]),loc_in_brackets,show_brackets,separator,tags))
+      return(gen_combined_name(street_abbrev(tags[key[0]],targetlang),street_abbrev_all(tags[key[1]]),tags))
     # case 5
     if (key[0][0:12] != '__transcript'):
-      return(gen_combined_name(street_abbrev(tags[key[0]],'en'),street_abbrev_all(tags[key[1]]),loc_in_brackets,show_brackets,separator,tags))
+      return(gen_combined_name(street_abbrev(tags[key[0]],'en'),street_abbrev_all(tags[key[1]]),tags))
     else:
       # case 6
       transcripted=geo_transcript(street_abbrev_all_nonlatin(tags[key[0][13:]]),geometry)
-      return(gen_combined_name(transcripted,street_abbrev_all_nonlatin(tags[key[1]]),loc_in_brackets,show_brackets,separator))
+      return(gen_combined_name(transcripted,street_abbrev_all_nonlatin(tags[key[1]])))
     
   # cases 2 and 3
-  return('')
+  return(['',''])
 
 # Third one of the three l10n functions
 # this one will return only a localized latin name (if possible)
@@ -253,3 +237,20 @@ geometry=None):
     
   # cases 2 and 3
   return('')
+
+# This will format the list output from the above functions as a
+# string usable for rendering
+def format_list4map(list,seperator,reverse=False,show_brackets=False):
+  
+  if reverse:
+    list.reverse()
+  if show_brackets:
+    list[1]='('+list[1]+')'
+  if '' in list:
+    namestring=''.join(list)
+  else:
+    namestring=seperator.join(list)
+    # Our string is a left-to right text paragraph
+    namestring=u'\u202a'+namestring+u'\u202c'
+  return(namestring)
+  
