@@ -1,8 +1,15 @@
 #!/usr/bin/python3
+import os
 
 # get version number from source
-import osml10n
-osml10n_version=osml10n.version()
+osml10n_version = None
+HERE = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(HERE, 'osml10n', 'osml10n_version.py')) as f:
+    for line in f:
+        line = line.strip()
+        if line.startswith('osml10n_version'):
+            osml10n_version = line.split('=')[1].strip().strip("\"'")
+assert osml10n_version is not None
 
 from distutils.core import setup
 setup(
